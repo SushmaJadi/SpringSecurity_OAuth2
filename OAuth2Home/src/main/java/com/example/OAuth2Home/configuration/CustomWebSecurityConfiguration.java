@@ -19,7 +19,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class CustomWebSecurityConfiguration {
 
 
-
     /*@Bean
         public Filter springSecurityFilterChain(ObjectProvider<HttpSecurity> provider) throws Exception {
 
@@ -44,7 +43,10 @@ public class CustomWebSecurityConfiguration {
     @Bean
     @Order(SecurityProperties.BASIC_AUTH_ORDER)
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests((requests) -> requests.requestMatchers("/garage/entry", "/kitchen/entry", "/laundry/entry").authenticated());
+        http.authorizeHttpRequests(
+                (requests) -> requests
+                        .requestMatchers("/garage/entry", "/kitchen/entry", "/laundry/entry", "/rooms/entry").authenticated()
+                        .requestMatchers("/living_room/entry").permitAll());
         http.formLogin(withDefaults());
         http.httpBasic(withDefaults());
         return http.build();
@@ -56,9 +58,9 @@ public class CustomWebSecurityConfiguration {
 
         UserDetails kitchen = User.builder().roles("kitchenUser").username("kitchenUser").password("{noop}12345Kitchen").build();
         UserDetails garage = User.builder().roles("garageUser").username("garageUser").password("{noop}12345@Garage").build();
-        UserDetails laundry = User.builder().roles("laundryUser").username("laundryUser").password("{bcrypt}$2y$10$lGAi1qCuGPNmSRmCRTm7DObmidTeNL9Vq0TLberYyYLsSbmK4ZQFq").build();
-        UserDetails living = User.builder().roles("hallUser").username("hallUser").password("12345hall").build();
-        UserDetails rooms = User.builder().roles("roomsUser").username("roomsUser").password("12345rooms").build();
+        UserDetails laundry = User.builder().roles("laundryUser").username("laundryUser").password("{bcrypt}$2y$10$lGAi1qCuGPNmSRmCRTm7DObmidTeNL9Vq0TLberYyYLsSbmK4ZQFq").build();//12345laundry --bctryptcode
+        UserDetails living = User.builder().roles("hallUser").username("hallUser").password("{SHA-256}858e1f305443116c22100e06fdd49cc11679362587dcca2a4e01bf2e1162777d").build();//12345hall--encodehashhexdecimal
+        UserDetails rooms = User.builder().roles("roomsUser").username("roomsUser").password("{ldap}03F51CE2bdnsbuyweui2").build(); //12345rooms -- ldap Keygenerator randomkey using as password
 
         return new InMemoryUserDetailsManager(kitchen, garage, laundry, living, rooms);
     }
